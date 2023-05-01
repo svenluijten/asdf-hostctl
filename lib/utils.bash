@@ -13,7 +13,6 @@ fail() {
 
 curl_opts=(-fsSL)
 
-# NOTE: You might want to remove this if hostctl is not hosted on GitHub releases.
 if [ -n "${GITHUB_API_TOKEN:-}" ]; then
 	curl_opts=("${curl_opts[@]}" -H "Authorization: token $GITHUB_API_TOKEN")
 fi
@@ -35,33 +34,33 @@ list_all_versions() {
 }
 
 get_arch() {
-  local arch=""
-  local arch_check=${ASDF_HOSTCTL_OVERWRITE_ARCH:-"$(uname -m)"}
-  case "${arch_check}" in
-  x86_64 | amd64) arch="64-bit" ;;
-  aarch64 | arm64) arch="arm64" ;;
-  *)
-    fail "Arch '${arch_check}' not supported!"
-    ;;
-  esac
+	local arch=""
+	local arch_check=${ASDF_HOSTCTL_OVERWRITE_ARCH:-"$(uname -m)"}
+	case "${arch_check}" in
+	x86_64 | amd64) arch="64-bit" ;;
+	aarch64 | arm64) arch="arm64" ;;
+	*)
+		fail "Arch '${arch_check}' not supported!"
+		;;
+	esac
 
-  printf "%s" "$arch"
+	printf "%s" "$arch"
 }
 
 get_platform() {
-  local platform=""
+	local platform=""
 
-  platform="$(uname -s)"
+	platform="$(uname -s)"
 
-  if [ "$platform" != "Linux" ] && [ "$platform" != "Darwin" ] && [ "$platform" != "Windows" ]; then
-    fail "Platform '${platform}' not supported!"
-  fi
+	if [ "$platform" != "Linux" ] && [ "$platform" != "Darwin" ] && [ "$platform" != "Windows" ]; then
+		fail "Platform '${platform}' not supported!"
+	fi
 
-  if [ "$platform" == "Darwin" ]; then
-      platform="macOS"
-  fi
+	if [ "$platform" == "Darwin" ]; then
+		platform="macOS"
+	fi
 
-  printf "%s" "$platform"
+	printf "%s" "$platform"
 }
 
 download_release() {
