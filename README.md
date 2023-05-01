@@ -16,10 +16,8 @@
 
 # Dependencies
 
-**TODO: adapt this section**
-
 - `bash`, `curl`, `tar`: generic POSIX utilities.
-- `SOME_ENV_VAR`: set this environment variable in your shell config to load the correct version of tool x.
+- `ASDF_HOSTCTL_OVERWRITE_ARCH`: overwrite the arch you're installing in. Possible values: `x86_64`, `amd64`, `aarch64`, and `arm64`
 
 # Install
 

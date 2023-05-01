@@ -2,7 +2,6 @@
 
 set -euo pipefail
 
-# TODO: Ensure this is the correct GitHub homepage where releases can be downloaded for hostctl.
 GH_REPO="https://github.com/guumaster/hostctl"
 TOOL_NAME="hostctl"
 TOOL_TEST="hostctl --help"
@@ -31,18 +30,50 @@ list_github_tags() {
 }
 
 list_all_versions() {
-	# TODO: Adapt this. By default we simply list the tag names from GitHub releases.
 	# Change this function if hostctl has other means of determining installable versions.
 	list_github_tags
+}
+
+get_arch() {
+  local arch=""
+  local arch_check=${ASDF_HOSTCTL_OVERWRITE_ARCH:-"$(uname -m)"}
+  case "${arch_check}" in
+  x86_64 | amd64) arch="64-bit" ;;
+  aarch64 | arm64) arch="arm64" ;;
+  *)
+    fail "Arch '${arch_check}' not supported!"
+    ;;
+  esac
+
+  printf "%s" "$arch"
+}
+
+get_platform() {
+  local platform=""
+
+  platform="$(uname -s)"
+
+  if [ "$platform" != "Linux" ] && [ "$platform" != "Darwin" ] && [ "$platform" != "Windows" ]; then
+    fail "Platform '${platform}' not supported!"
+  fi
+
+  if [ "$platform" == "Darwin" ]; then
+      platform="macOS"
+  fi
+
+  printf "%s" "$platform"
 }
 
 download_release() {
 	local version filename url
 	version="$1"
 	filename="$2"
+	arch="$(get_arch)"
+	platform="$(get_platform)"
 
-	# TODO: Adapt the release URL convention for hostctl
 	url="$GH_REPO/archive/v${version}.tar.gz"
+
+	url=$(curl -s "https://api.github.com/repos/guumaster/hostctl/releases/tags/v${version}" | grep -o -E "https://.+?_${platform,,}_${arch}.tar.gz")
 
 	echo "* Downloading $TOOL_NAME release $version..."
 	curl "${curl_opts[@]}" -o "$filename" -C - "$url" || fail "Could not download $url"
@@ -61,7 +92,6 @@ install_version() {
 		mkdir -p "$install_path"
 		cp -r "$ASDF_DOWNLOAD_PATH"/* "$install_path"
 
-		# TODO: Assert hostctl executable exists.
 		local tool_cmd
 		tool_cmd="$(echo "$TOOL_TEST" | cut -d' ' -f1)"
 		test -x "$install_path/$tool_cmd" || fail "Expected $install_path/$tool_cmd to be executable."
