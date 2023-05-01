@@ -68,11 +68,13 @@ download_release() {
 	version="$1"
 	filename="$2"
 	arch="$(get_arch)"
-	platform="$(get_platform)"
+	platform="$(get_platform | tr '[:upper:]' '[:lower:]')"
 
-	url="$GH_REPO/archive/v${version}.tar.gz"
+	echo "** Platform: $platform"
+	echo "** Arch:     $arch"
+	echo "** Version:  $version"
 
-	url=$(curl -s "https://api.github.com/repos/guumaster/hostctl/releases/tags/v${version}" | grep -o -E "https://.+?_${platform,,}_${arch}.tar.gz")
+	url=$(curl -s "https://api.github.com/repos/guumaster/hostctl/releases/tags/v${version}" | grep -o -E "https://.+?_${platform}_${arch}.tar.gz")
 
 	echo "* Downloading $TOOL_NAME release $version..."
 	curl "${curl_opts[@]}" -o "$filename" -C - "$url" || fail "Could not download $url"
