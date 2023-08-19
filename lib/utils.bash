@@ -70,10 +70,6 @@ download_release() {
 	arch="$(get_arch)"
 	platform="$(get_platform | tr '[:upper:]' '[:lower:]')"
 
-	echo "** Platform: $platform"
-	echo "** Arch:     $arch"
-	echo "** Version:  $version"
-
 	url=$(curl --silent "https://api.github.com/repos/guumaster/hostctl/releases/tags/v${version}" | grep --only-matching --ignore-case --extended-regexp "https://.+?_${platform}_${arch}\.tar\.gz")
 
 	echo "* Downloading $TOOL_NAME release $version..."
