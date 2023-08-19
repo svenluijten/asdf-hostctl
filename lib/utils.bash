@@ -74,7 +74,7 @@ download_release() {
 	echo "** Arch:     $arch"
 	echo "** Version:  $version"
 
-	url=$(curl -s "https://api.github.com/repos/guumaster/hostctl/releases/tags/v${version}" | grep -o -E "https://.+?_${platform}_${arch}.tar.gz")
+	url=$(curl --silent "https://api.github.com/repos/guumaster/hostctl/releases/tags/v${version}" | grep --only-matching --ignore-case --extended-regexp "https://.+?_${platform}_${arch}\.tar\.gz")
 
 	echo "* Downloading $TOOL_NAME release $version..."
 	curl "${curl_opts[@]}" -o "$filename" -C - "$url" || fail "Could not download $url"
